@@ -1,0 +1,25 @@
+# Default output directory
+--outputdir Reports
+--variable SCREENSHOT_DIR:Reports/screenshots
+
+
+# Naming convention for reports/logs
+--output output.xml
+--report report.html
+--log log.html
+
+# Log level: TRACE | DEBUG | INFO | WARN | NONE
+--loglevel INFO
+
+# Example: environment variable
+-v ENV:dev
+
+# Only include/exclude certain tags
+# --include smoke
+# --exclude slow
+
+# Failures can be rerun using the previous output
+# --rerunfailed results/output.xml
+
+# Randomize test order (options: all|suites|tests)
+# --randomize all
