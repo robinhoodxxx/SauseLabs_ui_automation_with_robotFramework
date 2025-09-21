@@ -12,6 +12,11 @@ for /f "tokens=1-3 delims=:." %%a in ("%time%") do (
     set ss=%%c
 )
 if "%hh:~0,1%"==" " set hh=0%hh:~1,1%
-set "outdir=reports\%yyyy%-%mm%-%dd%_%hh%-%min%-%ss%"
+set "reportdir=Reports"
+set "outdir=%reportdir%\%yyyy%%mm%%dd%_%hh%%min%%ss%"
 python -m robot -A robot.options --outputdir %outdir% --variable SCREENSHOT_DIR:%outdir%\screenshots %*
+REM Copy the log and report files into the output directory
+copy "%outdir%\output.xml" "%reportdir%\"
+copy "%outdir%\log.html" "%reportdir%\"
+copy "%outdir%\report.html" "%reportdir%\"
 endlocal
