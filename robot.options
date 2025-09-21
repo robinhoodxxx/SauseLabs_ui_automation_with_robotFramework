@@ -1,6 +1,4 @@
 # Default output directory
---outputdir Reports
---variable SCREENSHOT_DIR:Reports/screenshots
 
 
 # Naming convention for reports/logs
