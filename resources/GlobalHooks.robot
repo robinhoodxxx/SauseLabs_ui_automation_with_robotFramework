@@ -1,6 +1,6 @@
 *** Settings ***
 Library    SeleniumLibrary
-Library    ../../keywords/CommonKeywords.py
+Library    ../keywords/CommonKeywords.py
 
 *** Variables ***
 
@@ -15,6 +15,7 @@ Navigate to the Application
     ELSE
        Open browser  ${url}   ${browser}
     END
+    Log Message    Navigated to URL: ${url} using browser: ${browser}
     Maximize Browser Window
     Capture page screenshot
 
