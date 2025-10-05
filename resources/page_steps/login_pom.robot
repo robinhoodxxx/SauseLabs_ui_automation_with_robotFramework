@@ -3,7 +3,6 @@ Library    SeleniumLibrary
 Library    ../../keywords/CommonKeywords.py
 
 *** Variables ***
-${password_store}    --password-store=basic
 ${User_name_loc}    id:user-name
 ${Pass_word_loc}    id:password
 ${Login_Button}    id:login-button
