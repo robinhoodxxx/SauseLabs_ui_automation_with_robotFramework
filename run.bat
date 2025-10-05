@@ -19,4 +19,13 @@ REM Copy the log and report files into the output directory
 copy "%outdir%\output.xml" "%reportdir%\"
 copy "%outdir%\log.html" "%reportdir%\"
 copy "%outdir%\report.html" "%reportdir%\"
+if exist "%reportdir%\screenshots\" (
+    echo Screenshots directory exists.
+) else (
+    echo Screenshots directory does not exist. Creating it.
+    mkdir "%reportdir%\screenshots\"
+    )
+copy "%outdir%\screenshots\*" "%reportdir%\screenshots\"
+REM Create a zip file of the output directory using PowerShell
+powershell -Command "Compress-Archive -Path '%outdir%\*' -DestinationPath '%reportdir%\report.zip' -Force"
 endlocal

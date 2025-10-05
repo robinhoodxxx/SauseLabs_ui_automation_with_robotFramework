@@ -9,9 +9,9 @@ ${Order_Complete_Header}    xpath://div[@id='checkout_complete_container']/h2[te
 
 Verify Order Completion
     Element Should Be Visible    ${Order_Complete_Header}
-    Capture page screenshot
+    Capture page screenshot    order_complete.png
     Log Message    Order Completion Verified Successfully
 Go Back To Home Page
     Click Button    ${BACK_HOME_BUTTON}
-    Capture page screenshot
+    Capture page screenshot    back_to_home.png
     Log Message    Navigated back to Home Page Successfully

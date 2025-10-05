@@ -6,7 +6,8 @@ Library       ../../keywords/CommonKeywords.py
 ${FIRST_NAME_Loc}        id:first-name
 ${LAST_NAME_Loc}         id:last-name
 ${POSTAL_CODE_Loc}       id:postal-code
-${CONTINUE_BUTTON}   id:continue
+${CONTINUE_BUTTON}       id:continue
+
 
 *** Keywords ***
 Enter Address And Continue
@@ -15,8 +16,8 @@ Enter Address And Continue
     Input Text    ${FIRST_NAME_Loc}    ${first_name}
     Input Text    ${LAST_NAME_Loc}     ${last_name}
     Input Text    ${POSTAL_CODE_Loc}   ${postal_code}
-    Capture page screenshot
+    Capture page screenshot    address_entered.png
     Click Button  ${CONTINUE_BUTTON}
-    Capture page screenshot
+    Capture page screenshot    after_address_continue.png
     Log Message    Address entered and continued to next step
 

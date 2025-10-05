@@ -1,24 +1,30 @@
 *** Settings ***
 Library    SeleniumLibrary
 Library    ../../keywords/CommonKeywords.py
+Library    Collections
 
 *** Variables ***
 ${ADD_ITEM_BUTTON}    xpath://div[@class='inventory_item_name ' and text()='{}']/ancestor::div[@class='inventory_item_description']//button[text()='Add to cart']
 ${CART_ICON}    id:shopping_cart_container
 ${ITEM_TITLE}    xpath://div[@class='inventory_item_name' and text()='{}']
 ${Checkout_Button}    id:checkout
+${Item_Price}    //div[normalize-space()='{}']/ancestor::div[@data-test = 'inventory-item']//div[@class='inventory_item_price']
 
 *** Keywords ***
 
 Add Items To Cart
     [Arguments]    @{items}
-    Capture page screenshot
+    ${item_price_map}=    Create Dictionary
     FOR    ${item}    IN    @{items}
         ${locator}=    Format Arguments    ${ADD_ITEM_BUTTON}    ${item}
-        Log Message  Adding item to cart:${item} with locator:${locator}
-        Click Button  ${locator}
+        ${price_locator}=    Format Arguments    ${Item_Price}    ${item}
+        ${price_text}=    Get Text    ${price_locator}
+        Log Message    Adding item to cart: ${item} | Price: ${price_text}
+        Click Button    ${locator}
+        Set To Dictionary   ${item_price_map}    ${item}=${price_text}
     END
-    Capture page screenshot
+    Log Message    Items added to cart successfully: ${items}
+    RETURN      ${item_price_map}
 
 Verify the Cart Count
     [Arguments]    @{items}
@@ -26,24 +32,31 @@ Verify the Cart Count
     ${expected_count}=    Get Length    ${items}
     Should Be Equal As Strings    ${cart_count}    ${expected_count}
     Log Message    Items added to cart:${expected_count} verified cart count: ${cart_count}
+    Capture page screenshot    items_added_to_cart.png
 
-Verify Items In Cart
-    [Arguments]    @{items}
-    Capture page screenshot
-    FOR    ${item}    IN    @{items}
-        ${locator}=    Format Arguments    ${ITEM_TITLE}    ${item}
-        Element Should Be Visible    ${locator}
-    END
-    Capture page screenshot
-    Log Message    All items verified in cart successfully
+
 
 Go to Cart
     Click Element    ${CART_ICON}
-    Capture page screenshot
 
 Proceed to Checkout
     Click Button    ${Checkout_Button}
-    Capture page screenshot
+    Capture page screenshot    proceed_to_checkout.png
     Log Message    Proceeded to Checkout Successfully
 
+Verify Item Prices
+    [Arguments]    ${item_price_map}
+    FOR    ${item}    ${expected_price}    IN    &{item_price_map}
+        ${item_locator}=    Format Arguments    ${ITEM_TITLE}    ${item}
+        Element should be visible    ${item_locator}
+        ${price_locator}=    Format Arguments    ${Item_Price}    ${item}
+        ${actual_price}=    Get Text    ${price_locator}
+        Should Be Equal As Strings    ${actual_price}    ${expected_price}
+        Log Message    Price for item: ${item} verified successfully. Expected: ${expected_price}, Actual: ${actual_price}
+    END
 
+Verify Item Prices in Cart
+    [Arguments]    ${item_price_map}
+    Verify Item Prices    ${item_price_map}
+    Capture page screenshot    item_prices_verified_in_cart.png
+    Log Message    All item prices verified in cart successfully
