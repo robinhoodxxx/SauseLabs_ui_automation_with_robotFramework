@@ -1,6 +1,5 @@
 # Default output directory
 
-
 # Naming convention for reports/logs
 --output output.xml
 --report report.html
