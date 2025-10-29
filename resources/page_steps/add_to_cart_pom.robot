@@ -1,6 +1,6 @@
 *** Settings ***
 Library    SeleniumLibrary
-Library    ../../keywords/CommonKeywords.py
+Library    ../../CommUtils/CommonKeywords.py
 Library    Collections
 
 *** Variables ***
@@ -16,6 +16,7 @@ Add Items To Cart
     [Arguments]    @{items}
     ${item_price_map}=    Create Dictionary
     FOR    ${item}    IN    @{items}
+        Log to console    ${item}
         ${locator}=    Format Arguments    ${ADD_ITEM_BUTTON}    ${item}
         ${price_locator}=    Format Arguments    ${Item_Price}    ${item}
         ${price_text}=    Get Text    ${price_locator}
@@ -23,7 +24,7 @@ Add Items To Cart
         Click Button    ${locator}
         Set To Dictionary   ${item_price_map}    ${item}=${price_text}
     END
-    Log Message    Items added to cart successfully: ${items}
+    Log Message    Items added to cart successfully: @{items}
     RETURN      ${item_price_map}
 
 Verify the Cart Count
@@ -32,7 +33,7 @@ Verify the Cart Count
     ${expected_count}=    Get Length    ${items}
     Should Be Equal As Strings    ${cart_count}    ${expected_count}
     Log Message    Items added to cart:${expected_count} verified cart count: ${cart_count}
-    Capture page screenshot    items_added_to_cart.png
+    Capture Unique Screenshot    items_added_to_cart.png
 
 
 
@@ -41,7 +42,7 @@ Go to Cart
 
 Proceed to Checkout
     Click Button    ${Checkout_Button}
-    Capture page screenshot    proceed_to_checkout.png
+    Capture Unique Screenshot    proceed_to_checkout.png
     Log Message    Proceeded to Checkout Successfully
 
 Verify Item Prices
@@ -58,5 +59,5 @@ Verify Item Prices
 Verify Item Prices in Cart
     [Arguments]    ${item_price_map}
     Verify Item Prices    ${item_price_map}
-    Capture page screenshot    item_prices_verified_in_cart.png
+    Capture Unique screenshot    item_prices_verified_in_cart.png
     Log Message    All item prices verified in cart successfully

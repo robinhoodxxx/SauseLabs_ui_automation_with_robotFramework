@@ -1,6 +1,6 @@
 *** Settings ***
 Library           SeleniumLibrary
-Library       ../../keywords/CommonKeywords.py
+Library       ../../CommUtils/CommonKeywords.py
 
 *** Variables ***
 ${FIRST_NAME_Loc}        id:first-name
@@ -16,8 +16,8 @@ Enter Address And Continue
     Input Text    ${FIRST_NAME_Loc}    ${first_name}
     Input Text    ${LAST_NAME_Loc}     ${last_name}
     Input Text    ${POSTAL_CODE_Loc}   ${postal_code}
-    Capture page screenshot    address_entered.png
+    Capture Unique screenshot    address_entered.png
     Click Button  ${CONTINUE_BUTTON}
-    Capture page screenshot    after_address_continue.png
+    Capture Unique screenshot    after_address_continue.png
     Log Message    Address entered and continued to next step
 

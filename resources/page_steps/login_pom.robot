@@ -1,6 +1,6 @@
 *** Settings ***
 Library    SeleniumLibrary
-Library    ../../keywords/CommonKeywords.py
+Library    ../../CommUtils/CommonKeywords.py
 
 *** Variables ***
 ${User_name_loc}    id:user-name
@@ -14,9 +14,9 @@ Login With Credentials
     Wait until element is visible    ${User_name_loc}    timeout=10s
     Input Text    ${User_name_loc}    ${username_val}
     Input Text    ${Pass_word_loc}    ${password_val}
-    Capture page screenshot    login.png
+    Capture Unique screenshot    login.png
     Click Button    ${Login_Button}
-    Capture page screenshot    after_login.png
+    Capture Unique screenshot    after_login.png
     Log Message    Logged in successfully with user: ${username_val}
 
 

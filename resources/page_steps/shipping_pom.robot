@@ -1,7 +1,8 @@
 *** Settings ***
 Library    SeleniumLibrary
-Library    ../../keywords/CommonKeywords.py
+Library    ../../CommUtils/CommonKeywords.py
 Resource    add_to_cart_pom.robot
+Library    String
 *** Variables ***
 ${FINISH_BUTTON}         id:finish
 ${ITEM_TOTAL}            xpath://div[@class='summary_subtotal_label']
@@ -13,13 +14,13 @@ ${TOTAL}                 xpath://div[@class='summary_total_label']
 Verify the Items in Checkout Page
     [Arguments]    ${item_price_map}
     Verify Item Prices   ${item_price_map}
-    Capture page screenshot    items_verified_in_checkout.png
+    Capture Unique screenshot    items_verified_in_checkout.png
     Log Message    All items verified in checkout page successfully
 
 
 Finish Shipping
     Click Button    ${FINISH_BUTTON}
-    Capture page screenshot    finish_shipping.png
+    Capture Unique screenshot    finish_shipping.png
     Log Message    Purchase Completed Successfully
 
 Verify Price Details in Checkout Page
