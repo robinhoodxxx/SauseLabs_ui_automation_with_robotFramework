@@ -8,7 +8,7 @@ Variables    ../Configs/application.py
 
 
 *** Variables ***
-${VIDEO_DIR}    ${OUTPUT DIR}${/}videos
+${VIDEO_DIR}    ${OUTPUT DIR}
 
 *** Keywords ***
 Navigate to the Application
@@ -42,8 +42,9 @@ Navigate to the Application
 
 Start Test Video Recording
     [Documentation]    Starts video recording and saves the target path to a test variable.
-    Start Video Recording
     ${sanitized_name}=       Replace String    ${TEST NAME}    ${SPACE}    _
+    Create directory     ${OUTPUT DIR}/${TEST NAME}
+    Start Video Recording     name=${OUTPUT DIR}/${TEST NAME}/${sanitized_name}     embed=True     embed_width=100px   alias=${sanitized_name}
     ${desired_filename}=     Set Variable    ${sanitized_name}.webm
     ${final_video_path}=     Set Variable    ${VIDEO_DIR}${/}${desired_filename}
     Set Test Variable        ${final_video_path}
@@ -51,12 +52,16 @@ Start Test Video Recording
     Log to console           Desired final video path: ${final_video_path}
 
 
+
 Stop Test Video Recording
-    ${link_path}=    Video Record Path
-    Log    <a href="${link_path}">🎥 Watch ${TEST NAME} Video</a>    html=True
+#    ${link_path}=    Video Record Path
+#    Log to console    linkpath ${link_path}
+#    Log    <a href="${link_path}">🎥 Watch ${TEST NAME} Video</a>    html=True
+     Stop Video Recording     alias=${sanitized_name}
+
 
 Video Record Path
-    ${generic_path}=         Stop Video Recording
-    Create Directory         ${VIDEO_DIR}
-    Move File   ${generic_path}    ${final_video_path}
-    RETURN    videos${/}${sanitized_name}.webm
+#    ${generic_path}=         Stop Video Recording
+#    Create Directory         ${VIDEO_DIR}
+#    Move File   ${generic_path}    ${final_video_path}
+#    RETURN    videos${/}${sanitized_name}.webm

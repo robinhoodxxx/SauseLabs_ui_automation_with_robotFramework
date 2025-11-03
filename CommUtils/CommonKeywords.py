@@ -1,5 +1,6 @@
 import logging
 
+from numpy.distutils.lib2def import output_def
 from robot.api.deco import keyword
 from robot.libraries.BuiltIn import BuiltIn
 import os
@@ -25,36 +26,6 @@ class CommonKeywords:
         """Rounds a number to the specified number of digits."""
         return round(float(number), int(digits))
 
-    @keyword("Capture Unique Screenshots")
-    def capture_unique_screenshot(self, base_name="screenshot"):
-        """
-        Capture a screenshot with auto-incremented filename if one already exists.
-        - Adds '.png' if not present.
-        - Example: login.png, add_to_cart1.png, etc.
-        """
-        # Get Robot output directory safely
-        output_dir = BuiltIn().get_variable_value("${OUTPUT DIR}")
-        screenshot_dir = os.path.join(output_dir, "screenshots")
-        os.makedirs(screenshot_dir, exist_ok=True)
-
-        # ✅ Check if base name already has an extension
-        base, ext = os.path.splitext(base_name)
-        if not ext:
-            ext = ".png"
-
-        # Build initial file path
-        file_path = os.path.join(screenshot_dir, f"{base}{ext}")
-
-        # Increment file name if already exists
-        index = 0
-        while os.path.exists(file_path):
-            index += 1
-            file_path = os.path.join(screenshot_dir, f"{base}{index}{ext}")
-
-        # Capture the screenshot
-        self.selib.capture_page_screenshot(file_path)
-
-        return file_path
 
     @keyword("Capture Unique Screenshot")
     def capture_unique_screenshot(self, base_name="screenshot", full_page=True):
@@ -66,13 +37,13 @@ class CommonKeywords:
         """
         builtin = BuiltIn()
         output_dir = builtin.get_variable_value("${OUTPUT DIR}")
-        test_name = builtin.get_variable_value("${TEST NAME}")
+        test_name = builtin.get_variable_value("${TEST NAME}").strip()
+        testname_dir = os.path.join(output_dir, test_name)
+        os.makedirs(testname_dir, exist_ok=True)
+        screenshot_dir = os.path.join(str(testname_dir), "screenshots")
+        os.makedirs(screenshot_dir, exist_ok=True)
         driver = self.selib.driver
 
-        # Sanitize folder name
-        safe_test_name = "".join(c if c.isalnum() or c in ('_', '-') else "_" for c in test_name)
-        screenshot_dir = os.path.join(output_dir, "screenshots", safe_test_name)
-        os.makedirs(screenshot_dir, exist_ok=True)
 
         # Handle extension
         base, ext = os.path.splitext(base_name)
