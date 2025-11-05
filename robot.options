@@ -1,8 +1,8 @@
 # Default output directory
 --variable ENV:dev
 --variable BROWSER:Chrome
---variable HEADLESS:True
---variable TAG:smoke
+--variable CHROME_HEADLESS:True
+# --variable TAG:smoke
 
 # Naming convention for reports/logs
 --output output.xml
@@ -12,8 +12,7 @@
 # Log level: TRACE | DEBUG | INFO | WARN | NONE
 --loglevel INFO
 
-# Example: environment variable
--v ENV:dev
+
 
 # Only include/exclude certain tags
 # --include smoke
