@@ -12,3 +12,4 @@ Pass_word =   "secret_sauce"
 # File Paths
 # DOWNLOAD_DIR = "/temp/downloads"
 OUTPUT_DIR = "Reports"
+RERUN_TRIES = 1
