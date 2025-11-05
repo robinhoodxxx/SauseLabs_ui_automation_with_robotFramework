@@ -6,7 +6,6 @@ Library    OperatingSystem
 Library    String
 Variables    ../Configs/application.py
 
-
 *** Variables ***
 ${VIDEO_DIR}    ${OUTPUT DIR}
 
@@ -42,6 +41,7 @@ Navigate to the Application
 
 Start Test Video Recording
     [Documentation]    Starts video recording and saves the target path to a test variable.
+    Set Custom Screenshot Directory For Current Test
     ${sanitized_name}=       Replace String    ${TEST NAME}    ${SPACE}    _
     Create directory     ${OUTPUT DIR}/${TEST NAME}
     Start Video Recording     name=${OUTPUT DIR}/${TEST NAME}/${sanitized_name}     embed=True     embed_width=100px   alias=${sanitized_name}
