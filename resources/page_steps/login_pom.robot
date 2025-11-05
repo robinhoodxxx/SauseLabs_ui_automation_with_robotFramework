@@ -16,7 +16,7 @@ Login With Credentials
     Input Text    ${Pass_word_loc}    ${password_val}
     Capture Unique screenshot    login.png
     Click Button    ${Login_Button}
-    Capture Unique screenshot    after_login.png
+    Capture Unique screenshot    after_login.png    ${True}
     Log Message    Logged in successfully with user: ${username_val}
 
 
