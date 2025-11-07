@@ -1,8 +1,9 @@
 *** Settings ***
 Library    SeleniumLibrary
-Library    ../CommUtils/CommonKeywords.py
 Library    ScreenCapLibrary
 Library    OperatingSystem
+Library    ../CommUtils/CommonKeywords.py
+
 Library    String
 Variables    ../Configs/application.py
 
@@ -10,34 +11,78 @@ Variables    ../Configs/application.py
 ${VIDEO_DIR}    ${OUTPUT DIR}
 
 *** Keywords ***
-Navigate to the Application
-    [Arguments]    ${url}    ${browser}=CHROME
+Navigate To The Application
+    [Arguments]    ${url}    ${browser}=CHROME    ${headless}=False
 
-    ${browser}=    Evaluate    '${browser}'.strip().upper()
-    ${options_required}=    Set Variable    ${False}
-    ${is_headless} =    Set Variable     ${False}
-    IF    'CHROME' == '${browser}'
-        ${options_required}=    Set Variable    ${True}
-        ${browser_headless}=    Catenate    SEPARATOR=    ${browser}    _HEADLESS
-        ${result}=      Run Keyword And Ignore Error    Set Variable    ${${browser_headless}}
-        ${is_headless}=    Set Variable If    '${result}[0]' == 'PASS'    ${result}[1]    ${False}
+    # Normalize browser name
+    ${browser}=    Set Variable    ${browser.strip().upper()}
+    ${window_size}=    Set Variable      --window-size=1920,1080
 
-    END
-    IF    ${options_required}
+    # Check if headless variable is set externally (e.g., ${CHROME_HEADLESS}=True)
+    ${browser_headless_var}=    Catenate    SEPARATOR=    ${browser}    _HEADLESS
+    ${result}=      Run Keyword And Ignore Error    Set Variable    ${${browser_headless_var}}
+    ${headless}=    Set Variable If    '${result}[0]' == 'PASS'    ${result}[1]    ${False}
+
+    # Handle Chrome browser options
+    IF    '${browser}' == 'CHROME'
         ${chrome_options}=    Evaluate    sys.modules['selenium.webdriver.chrome.options'].Options()    sys
-        IF    ${is_headless}
-            Log To Console    Running Chrome in Headless Mode.
-            Call Method    ${chrome_options}     add_argument     --headless
-        END
-        ${prefs}=    Create Dictionary    credentials_enable_service=${False}    profile.password_manager_enabled=${False}    profile.password_manager_leak_detection=${False}
+
+        ${prefs}=    Create Dictionary
+        ...    credentials_enable_service=${False}
+        ...    profile.password_manager_enabled=${False}
+        ...    profile.password_manager_leak_detection=${False}
         Call Method    ${chrome_options}    add_experimental_option    prefs    ${prefs}
-        Open browser  ${url}   ${browser}    options=${chrome_options}
+
+        Call Method    ${chrome_options}    add_argument    --start-maximized
+        IF    ${headless}
+            Log To Console    Running Chrome in Headless Mode.
+            Call Method    ${chrome_options}    add_argument    --headless
+            Call Method    ${chrome_options}    add_argument     ${window_size}
+        END
+
+        Open Browser    ${url}    chrome    options=${chrome_options}
+
+    ELSE IF    '${browser}' == 'EDGE'
+        ${edge_options}=    Evaluate    sys.modules['selenium.webdriver.edge.options'].Options()    sys
+        Call Method    ${edge_options}    add_argument    --start-maximized
+
+        IF    ${headless}
+            Log To Console    Running Edge in Headless Mode.
+            Call Method    ${edge_options}    add_argument    --headless
+            Call Method    ${edge_options}    add_argument    ${window_size}
+        END
+
+        ${edge_driver_path}=    Set Variable If    os.path.exists('Drivers/edge/msedgedriver.exe')    Drivers/edge/msedgedriver.exe    ${None}
+        IF    '${edge_driver_path}' != '${None}'
+            Open Browser    ${url}    edge    options=${edge_options}    executable_path=${edge_driver_path}
+        ELSE
+            Open Browser    ${url}    edge    options=${edge_options}
+        END
+
+    ELSE IF    '${browser}' == 'FIREFOX'
+        ${ff_options}=    Evaluate    sys.modules['selenium.webdriver.firefox.options'].Options()    sys
+        IF    ${headless}
+            Log To Console    Running Firefox in Headless Mode.
+            Call Method    ${ff_options}    add_argument    --headless
+        END
+        Open Browser    ${url}    firefox    options=${ff_options}
+        Maximize Browser Window
+
     ELSE
-        Open browser  ${url}   ${browser}
+        Fail    Unsupported browser type: ${browser}. Supported: CHROME, EDGE, FIREFOX.
     END
 
     Log Message    Navigated to URL: ${url} using browser: ${browser}
-    Maximize Browser Window
+
+#    # Maximize only when not headless
+    IF    not ${headless}
+        Maximize Browser Window
+    END
+
+Navigate to the Applications
+    [Arguments]    ${url}    ${browser}=CHROME
+#    Open Latest Browser    ${url}    ${browser}
+
 
 Start Test Video Recording
     [Documentation]    Starts video recording and saves the target path to a test variable.
