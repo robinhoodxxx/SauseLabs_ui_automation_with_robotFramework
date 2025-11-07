@@ -4,14 +4,11 @@ import os
 from robot.api.deco import keyword
 from robot.libraries.BuiltIn import BuiltIn
 
-
 class CommonKeywords:
     def __init__(self):
         logging.basicConfig(filename='robot_custom.log', level=logging.INFO, format='%(asctime)s %(message)s')
         self.builtin = BuiltIn()
         self.selib = BuiltIn().get_library_instance("SeleniumLibrary")
-
-
 
     @keyword("Format Arguments")
     def format(self, arg1, arg2):
@@ -48,8 +45,6 @@ class CommonKeywords:
         Capture a full-page screenshot, save it, and embed it inside a
         scrollable HTML container in the log.
         """
-
-
         if isinstance(full_page, str):
             full_page = full_page.lower() == 'true'
 
@@ -65,6 +60,7 @@ class CommonKeywords:
 
         driver = self.selib.driver
 
+
         # Handle unique file name... (rest of your file path logic)
         base, ext = os.path.splitext(base_name)
         if not ext:
@@ -79,23 +75,37 @@ class CommonKeywords:
         file_path = os.path.join(screenshot_dir, file_name)
 
         # 2. --- Handle Full Page Capture & Save to Disk ---
+        # height,width = driver.get_window_size()
+        # driver.set_window_size(width, height)
 
+        base64_data = ""
         if full_page:
-            total_height = driver.execute_script("return document.body.parentNode.scrollHeight")
-            total_width =  driver.execute_script("return window.innerWidth")
-            driver.set_window_size(total_width, total_height)
-            self.builtin.log_to_console(f"Set window size to: {total_width}x{total_height} for full page screenshot.")
+            browser_name = driver.capabilities.get("browserName", "").lower()
 
-        # Capture and save the screenshot to the determined file path
-        driver.save_screenshot(file_path)
+            if  browser_name in ["firefox"] :
+                # ✅ Native Firefox full-page capture
+                base64_data = driver.get_full_page_screenshot_as_base64()
+                driver.get_full_page_screenshot_as_file(file_path)
 
 
-        # 3. --- EMBED Screenshot in Log (Scrollable Base64) ---
-        # B. Get the screenshot data as Base64 string
-        base64_data = driver.get_screenshot_as_base64()
-        if full_page:
-            # Restore original window size after full page capture
-            driver.maximize_window()
+            elif browser_name in ["chrome", "microsoftedge"]:
+                # ✅ Use Chrome DevTools Protocol for full-page screenshot
+                self.builtin.log_to_console("browser_name:", browser_name)
+                driver.get_screenshot_as_file(file_path)
+                try:
+                    base64_data = driver.execute_cdp_cmd(
+                        "Page.captureScreenshot",
+                        {"format": "png", "captureBeyondViewport": True}
+                    )["data"]
+                except Exception:
+                    # fallback to viewport screenshot if CDP fails
+                    base64_data = driver.get_screenshot_as_base64()
+
+
+        else:
+            base64_data = driver.get_screenshot_as_base64()
+            driver.get_screenshot_as_file(file_path)
+
 
         # C. Log the image data using a SCROLLABLE HTML DIV
         # The image is displayed at its actual size within the fixed-size container.
@@ -104,7 +114,7 @@ class CommonKeywords:
             # Container DIV: Fixed height and width, with a scrollbar
             # f'<div style="width: 75%; height: 100%; overflow: scroll; border: 1px solid #ccc;">'
             # Embedded Image: Displayed at full width (100% of the DIV's width)
-            f'<img src="data:image/png;base64,{base64_data}" style="width: 100%; height: auto;" />'
+            f'<img src="data:image/png;base64,{base64_data}" style="width: 60%; height: auto;" />'
             f'</div>'
         )
         #
@@ -113,3 +123,4 @@ class CommonKeywords:
         # 4. --- Log and Return ---
         self.builtin.log_to_console(f"📸 Saved and Embedded (Scrollable) screenshot: {file_path}")
         return file_path
+
