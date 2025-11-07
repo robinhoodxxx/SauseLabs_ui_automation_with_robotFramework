@@ -5,4 +5,5 @@ opencv-python==4.12.0.88
 mss ==7.0.1
 robotframework-screencaplibrary==1.6.0
 robotframework-pabot==5.1.0
+webdriver-manager==4.0.2
 
