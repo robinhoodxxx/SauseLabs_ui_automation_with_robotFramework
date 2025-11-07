@@ -1,7 +1,9 @@
 # Default output directory
 --variable ENV:dev
---variable BROWSER:Chrome
---variable CHROME_HEADLESS:True
+--variable BROWSER:edge
+#--variable CHROME_HEADLESS:True
+#--variable CHROME_HEADLESS:True
+
 # --variable TAG:smoke
 
 # Naming convention for reports/logs
