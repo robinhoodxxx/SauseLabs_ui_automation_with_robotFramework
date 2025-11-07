@@ -3,6 +3,8 @@
 # Common Application Settings
 NORMAL_TIMEOUT = "15s"
 CHROME_HEADLESS = False
+EDGE_HEADLESS  = True
+FIREFOX_HEADLESS = False
 # Credentials (Use environment variables or secrets manager in real projects!)
 LOGIN_URL =   "https://www.saucedemo.com/"
 User_name =   "standard_user"
@@ -13,3 +15,5 @@ Pass_word =   "secret_sauce"
 # DOWNLOAD_DIR = "/temp/downloads"
 OUTPUT_DIR = "Reports"
 RERUN_TRIES = 1
+
+EDGE_DRIVER_PATH = "Drivers/edge/msedgedriver"
