@@ -4,6 +4,7 @@ import sys
 import shutil
 import argparse
 import subprocess
+import time
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
@@ -108,6 +109,7 @@ def run_tests_serial(args, timestamp_dir, test_names)->bool:
             return False
 
     # If all tests completed successfully (loop finished)
+    combine_reports(timestamp_dir)
     print("✅ All tests passed.")
     return True
 
@@ -185,7 +187,7 @@ def run_tests_parallel(args, timestamp_dir:str) -> bool:
 # -----------------------------
 def combine_reports(timestamp_dir:str):
     print("\n📊 Combining all test outputs into a single overall report...")
-    tests_dir = os.path.join(timestamp_dir, "tests")
+    tests_dir = os.path.join(timestamp_dir)
     combined_output = os.path.join(timestamp_dir, "output.xml")
 
     # Collect individual test outputs
@@ -201,12 +203,14 @@ def combine_reports(timestamp_dir:str):
 
     cmd = [
         sys.executable, "-m", "robot.rebot",
+        "--merge",
         "--outputdir", timestamp_dir,
         "--name", "Combined Report",
         "--output", combined_output,
     ] + output_files
 
     subprocess.run(cmd, check=True)
+    report_single_test(combined_output)
     print(f"✅ Combined report generated: {combined_output}")
 
 # -----------------------------
@@ -611,6 +615,14 @@ if __name__ == "__main__":
     # 3. Rerun Case:
     # python runner.py rerun -r Reports/previous/output.xml --tests "MyTestFolder"
     # -----------------------------
+    t1 = time.perf_counter()
     Runner()
+
+    # 3. Record the ending time (t2)
+    t2 = time.perf_counter()
+
+    # 4. Calculate the elapsed time
+    elapsed_time = t2 - t1
+    print(f"\n⏱️ Total Execution Time: {elapsed_time:.2f} seconds")
 
 
