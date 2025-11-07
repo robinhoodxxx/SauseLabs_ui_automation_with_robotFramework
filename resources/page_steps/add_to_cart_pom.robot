@@ -4,7 +4,7 @@ Library    ../../CommUtils/CommonKeywords.py
 Library    Collections
 
 *** Variables ***
-${ADD_ITEM_BUTTON}    xpath://div[@class='inventory_item_name ' and text()='{}']/ancestor::div[@class='inventory_item_description']//button[text()='Add to cart']
+${ADD_ITEM_BUTTON}     xpath://div[starts-with(@class,'inventory_item_name ') and text()='{}']/ancestor::div[@class='inventory_item_description']//button[text()='Add to cart']
 ${CART_ICON}    id:shopping_cart_container
 ${ITEM_TITLE}    xpath://div[@class='inventory_item_name' and text()='{}']
 ${Checkout_Button}    id:checkout
